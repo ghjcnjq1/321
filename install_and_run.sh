@@ -28,8 +28,8 @@ echo "Активирую виртуальное окружение..."
 source venv/bin/activate
 
 # Устанавливаем необходимые библиотеки
-echo "Устанавливаю Flask, psutil и Gunicorn..."
-pip install flask psutil gunicorn
+echo "Устанавливаю Flask и psutil..."
+pip install flask psutil
 
 # Создание файла app.py с кодом
 echo "Создаю файл app.py..."
@@ -190,37 +190,4 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 EOF
 
-# Запуск Gunicorn
-echo "Запускаю Gunicorn сервер..."
-gunicorn --workers 3 --bind 0.0.0.0:5000 app:app &
-
-# Устанавливаем и настраиваем Nginx
-echo "Устанавливаю Nginx..."
-sudo apt-get install -y nginx
-
-# Создаем конфигурацию Nginx для вашего приложения
-echo "Создаю конфигурацию Nginx..."
-cat > /etc/nginx/sites-available/your_app << 'EOF'
-server {
-    listen 80;
-    server_name your_domain_or_IP;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-EOF
-
-# Создаем символьную ссылку на конфигурацию в sites-enabled
-echo "Активирую конфигурацию Nginx..."
-sudo ln -s /etc/nginx/sites-available/your_app /etc/nginx/sites-enabled/
-
-# Перезагружаем Nginx для применения настроек
-echo "Перезагружаю Nginx..."
-sudo systemctl restart nginx
-
-echo "Все настроено! Ваше приложение доступно через Nginx на порту 80."
+echo "Все настроено! Ваше приложение доступно на порту 5000."
